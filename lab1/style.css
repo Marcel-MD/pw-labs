@@ -214,7 +214,7 @@ h4 {
   justify-content: space-between;
   align-items: center;
   margin: 0;
-  min-width: 500px;
+  min-width: 400px;
   font-size: 1.2em;
   font-weight: 600;
 }
@@ -223,4 +223,40 @@ h4 {
   border-color: #f2e0d0;
   margin-bottom: 1em;
   margin-top: 0.5em;
+}
+
+.strawberry-1 {
+  position: absolute;
+  left: -5%;
+  bottom: 25%;
+}
+
+.strawberry-2 {
+  position: absolute;
+  top: -5%;
+  right: 25%;
+}
+
+.pear-1 {
+  position: absolute;
+  bottom: 0;
+  right: 30%;
+}
+
+.banana-1 {
+  position: absolute;
+  top: 130%;
+  left: 5%;
+}
+
+.mango-1 {
+  position: absolute;
+  top: 100%;
+  right: 5%;
+}
+
+@media only screen and (max-width: 1000px) {
+  .random-image {
+    display: none;
+  }
 }
