@@ -1,4 +1,113 @@
 /* add your CSS here */
 section {
+  font-family: "Roboto", sans-serif;
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 3em;
+}
+
+nav {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 3em;
+}
+
+i {
+  /* color: #f2e0d0; */
+  font-size: 1.2em;
+  margin: 0 0.5em;
+}
+
+ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+a {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 0 0.5em;
+  color: #fb632f;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 5em;
+  font-weight: 500;
+  color: #000000;
+  text-align: center;
+  margin: 0.5em;
+}
+
+h2 {
+  font-size: 2em;
+  font-weight: 500;
+  color: #000000;
+  text-align: center;
+  margin: 0.5em;
+}
+
+p {
+  text-align: center;
+}
+
+button {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 1.5em;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.5em;
+  padding: 0.5em 1em;
+  margin: 1em;
+}
+
+#home {
+  background-color: #f2e0d0;
+}
+
+#about {
+  background-color: #fb632f;
+}
+
+.phone {
+  background-color: black;
+  border-radius: 1.8em;
+  padding: 0.2em;
+}
+
+.title-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.title-page {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.title-phone {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.our-promise {
+  max-width: 800px;
 }
