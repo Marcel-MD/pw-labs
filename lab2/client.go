@@ -5,17 +5,22 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"regexp"
 	"strings"
+	"time"
 
 	"golang.org/x/net/html"
 )
 
-func get(path string) string {
+func get(path string) {
+
+	path = addHttpsPrefix(path)
+
 	// Parse the URL
 	u, err := url.Parse(path)
 	if err != nil {
 		fmt.Println("Error parsing URL:", err)
-		return ""
+		return
 	}
 
 	// Follow redirects
@@ -24,13 +29,15 @@ func get(path string) string {
 		conn, err := net.Dial("tcp", u.Host+":443")
 		if err != nil {
 			fmt.Println("Error connecting to server:", err)
-			return ""
+			return
 		}
 
 		// Configure TLS
 		tlsConn := tls.Client(conn, &tls.Config{
 			ServerName: u.Hostname(),
 		})
+		// Read timeout
+		tlsConn.SetReadDeadline(time.Now().Add(5 * time.Second))
 
 		defer tlsConn.Close()
 
@@ -38,11 +45,11 @@ func get(path string) string {
 		err = tlsConn.Handshake()
 		if err != nil {
 			fmt.Println("Error during TLS handshake:", err)
-			return ""
+			return
 		}
 
 		// Send the HTTP request
-		fmt.Fprintf(tlsConn, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", u.Path, u.Host)
+		fmt.Fprintf(tlsConn, "GET %s HTTP/1.1\r\nHost: %s\r\nAccept: %s\r\n\r\n", u.Path, u.Host, "text/html, text/plain, application/json")
 
 		// Read the response
 		buf := make([]byte, 1024)
@@ -66,14 +73,14 @@ func get(path string) string {
 			}
 			if location == "" {
 				fmt.Println("Error following redirect: no Location header")
-				return ""
+				return
 			}
 
 			// Parse the new URL
 			newURL, err := url.Parse(location)
 			if err != nil {
 				fmt.Println("Error parsing redirect URL:", err)
-				return ""
+				return
 			}
 
 			// If the new URL is relative, resolve it against the old URL
@@ -89,7 +96,7 @@ func get(path string) string {
 		// Find the beginning of the body
 		bodyIndex := strings.Index(response, "\r\n\r\n")
 		if bodyIndex == -1 {
-			return response
+			fmt.Println(response)
 		}
 
 		// Extract the body from the response
@@ -102,20 +109,23 @@ func get(path string) string {
 			doc, err := html.Parse(strings.NewReader(body))
 			if err != nil {
 				fmt.Println("Error parsing HTML:", err)
-				return ""
+				return
 			}
 
 			// Extract the text from the HTML document
 			text := extractText(doc)
-			// Remove extra spaces
-			text = strings.Join(strings.Fields(text), " ")
-			return text
+			text = prettyText(text)
+			fmt.Println(text)
+			return
+
 		} else if strings.Contains(head, "text/plain") || strings.Contains(head, "application/json") {
 			// If the body is not HTML, print it as is
-			return body
+			fmt.Println(body)
+			return
 		}
 
-		return head
+		fmt.Println(head)
+		return
 	}
 }
 
@@ -129,6 +139,10 @@ func extractText(n *html.Node) string {
 		case "script", "style", "head", "iframe", "noscript", "svg", "title":
 			// Ignore these tags and their content
 			return ""
+
+		case "br", "p", "div", "li":
+			// Add a newline after these tags
+			text = "\n"
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			text += extractText(c)
@@ -140,4 +154,26 @@ func extractText(n *html.Node) string {
 	}
 
 	return text
+}
+
+func prettyText(text string) string {
+	// Replace consecutive whitespace characters with a single space
+	spaceRegex := regexp.MustCompile(`[ \t\r\f\v]+`)
+	text = spaceRegex.ReplaceAllString(text, " ")
+
+	// Replace consecutive newlines (which might have one space in between) with a single newline
+	newlineRegex := regexp.MustCompile(`(\n[\p{Zs}\t]*){2,}`)
+	text = newlineRegex.ReplaceAllString(text, "\n")
+
+	// Trim leading and trailing whitespace
+	text = strings.TrimSpace(text)
+
+	return text
+}
+
+func addHttpsPrefix(url string) string {
+	if !strings.HasPrefix(url, "https://") {
+		return "https://" + url
+	}
+	return url
 }
