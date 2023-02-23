@@ -1,3 +1,5 @@
 #! /usr/bin/env bash
 
 # ADD YOUR CODE HERE
+
+go run . "$@"
