@@ -129,7 +129,6 @@ func get(path string) {
 	}
 }
 
-// Helper function to extract text nodes from an HTML document
 func extractText(n *html.Node) string {
 	var text string
 
