@@ -49,7 +49,7 @@ func get(path string) (string, string) {
 		}
 
 		// Send the HTTP request
-		fmt.Fprintf(tlsConn, "GET %s HTTP/1.1\r\nHost: %s\r\nUser-Agent: %s\r\n\r\n", u.Path, u.Host, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+		fmt.Fprintf(tlsConn, "GET %s HTTP/1.1\r\nHost: %s\r\nUser-Agent: %s\r\nAccept: %s\r\n\r\n", u.RequestURI(), u.Host, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36", "text/html,text/plain;q=0.9,application/json;q=0.8,*/*;q=0.7")
 
 		// Read the response
 		buf := make([]byte, 1024)
