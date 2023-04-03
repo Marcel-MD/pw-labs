@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func get(path string) {
+func get(path string) (string, string) {
 
 	path = addHttpsPrefix(path)
 
@@ -20,7 +20,7 @@ func get(path string) {
 	u, err := url.Parse(path)
 	if err != nil {
 		fmt.Println("Error parsing URL:", err)
-		return
+		return "", ""
 	}
 
 	// Follow redirects
@@ -29,7 +29,7 @@ func get(path string) {
 		conn, err := net.Dial("tcp", u.Host+":443")
 		if err != nil {
 			fmt.Println("Error connecting to server:", err)
-			return
+			return "", ""
 		}
 
 		// Configure TLS
@@ -45,11 +45,11 @@ func get(path string) {
 		err = tlsConn.Handshake()
 		if err != nil {
 			fmt.Println("Error during TLS handshake:", err)
-			return
+			return "", ""
 		}
 
 		// Send the HTTP request
-		fmt.Fprintf(tlsConn, "GET %s HTTP/1.1\r\nHost: %s\r\nAccept: %s\r\n\r\n", u.Path, u.Host, "text/html, text/plain, application/json")
+		fmt.Fprintf(tlsConn, "GET %s HTTP/1.1\r\nHost: %s\r\nUser-Agent: %s\r\n\r\n", u.Path, u.Host, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
 
 		// Read the response
 		buf := make([]byte, 1024)
@@ -73,14 +73,14 @@ func get(path string) {
 			}
 			if location == "" {
 				fmt.Println("Error following redirect: no Location header")
-				return
+				return "", ""
 			}
 
 			// Parse the new URL
 			newURL, err := url.Parse(location)
 			if err != nil {
 				fmt.Println("Error parsing redirect URL:", err)
-				return
+				return "", ""
 			}
 
 			// If the new URL is relative, resolve it against the old URL
@@ -106,26 +106,33 @@ func get(path string) {
 
 		// If the body is HTML, extract the text
 		if strings.Contains(head, "text/html") {
-			doc, err := html.Parse(strings.NewReader(body))
-			if err != nil {
-				fmt.Println("Error parsing HTML:", err)
-				return
-			}
+			return body, "text/html"
+		} else if strings.Contains(head, "text/plain") {
+			return body, "text/plain"
+		} else if strings.Contains(head, "application/json") {
+			return body, "application/json"
+		} else {
+			return "", ""
+		}
+	}
+}
 
-			// Extract the text from the HTML document
-			text := extractText(doc)
-			text = prettyText(text)
-			fmt.Println(text)
-			return
-
-		} else if strings.Contains(head, "text/plain") || strings.Contains(head, "application/json") {
-			// If the body is not HTML, print it as is
-			fmt.Println(body)
+func processBody(body string, bodyType string) {
+	switch bodyType {
+	case "text/html":
+		doc, err := html.Parse(strings.NewReader(body))
+		if err != nil {
+			fmt.Println("Error parsing HTML:", err)
 			return
 		}
 
-		fmt.Println(head)
-		return
+		// Extract the text from the HTML document
+		text := extractText(doc)
+		text = prettyText(text)
+		fmt.Println(text)
+	case "text/plain", "application/json":
+		// If the body is not HTML, print it as is
+		fmt.Println(body)
 	}
 }
 

@@ -21,7 +21,8 @@ func main() {
 			return
 		}
 		url := args[1]
-		get(url)
+		body, bodyType := get(url)
+		processBody(body, bodyType)
 	case "-s":
 		if len(args) < 2 {
 			help()
