@@ -57,24 +57,21 @@ func search(args []string) {
 		fmt.Println()
 	}
 
-	n := 0
-
-	for n <= 0 || n > 10 {
-		fmt.Print("Type the number of the link you want to access: ")
-		var input string
-		_, err := fmt.Scanln(&input)
-		if err != nil {
-			fmt.Println("Try again.")
-			continue
-		}
-		n, err = strconv.Atoi(input)
-		if err != nil {
-			fmt.Println("Try again.")
-			continue
-		}
-		if n <= 0 || n > 10 {
-			fmt.Println("Try again.")
-		}
+	fmt.Print("Type the number of the link you want to access: ")
+	var input string
+	_, err = fmt.Scanln(&input)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	n, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if n <= 0 || n > 10 {
+		fmt.Println("Go learn to count!")
+		return
 	}
 
 	body, bodyType := get(results.Items[n-1].Link)
