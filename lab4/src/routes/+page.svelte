@@ -17,7 +17,7 @@
 			</picture>
 		</span>
 
-		to Quizzes Application
+		to Quiz Application
 	</h1>
 </section>
 
