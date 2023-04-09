@@ -4,19 +4,17 @@ import { TOKEN } from '$env/static/private';
 export function load({ cookies }) {
 	const id = cookies.get('userId');
 	const name = cookies.get('userName');
-	const surname = cookies.get('userSurname');
 
-	if (!id || !name || !surname) {
+	if (!id || !name) {
 		return {
 			authenticated: false,
 			user: null
 		};
 	}
 
-	let user: User = {
+	let user = {
 		id: parseInt(id),
-		name: name,
-		surname: surname
+		name: name
 	};
 
 	return {
@@ -47,8 +45,7 @@ export const actions = {
 			const user: User = await res.json();
 
 			cookies.set('userId', user.id.toString());
-			cookies.set('userName', user.name);
-			cookies.set('userSurname', user.surname);
+			cookies.set('userName', user.name + ' ' + user.surname);
 		}
 	},
 
@@ -68,7 +65,7 @@ export const actions = {
 		if (res.status === 200) {
 			cookies.delete('userId');
 			cookies.delete('userName');
-			cookies.delete('userSurname');
+			cookies.delete('quizState', { path: '/' });
 		}
 	}
 };

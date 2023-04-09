@@ -6,7 +6,13 @@
 <div class="question-card">
 	<h2>{question.question}</h2>
 	{#each question.answers as answer}
-		<input type="radio" id={answer + question.id} name={question.question} value={answer} />
+		<input
+			type="radio"
+			id={answer + question.id}
+			name={question.id.toString()}
+			value={answer}
+			required
+		/>
 		<label for={answer + question.id}>{answer}</label>
 	{/each}
 </div>
@@ -27,7 +33,8 @@
 	}
 
 	input[type='radio'] {
-		display: none;
+		opacity: 0;
+		position: absolute;
 	}
 
 	label {
@@ -50,7 +57,6 @@
 		border: 2px solid #ccc;
 		border-radius: 50%;
 		background-color: transparent;
-		transition: all 0.3s ease-in-out;
 	}
 
 	input[type='radio']:checked + label:before {

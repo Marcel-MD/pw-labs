@@ -11,7 +11,7 @@
 <div class="text-column">
 	{#if authenticated}
 		<h1>Register</h1>
-		<p>You are already logged in as <span>{user?.name} {user?.surname}</span>.</p>
+		<p>You are already logged in as <span>{user?.name}</span>.</p>
 
 		<form method="POST" action="?/delete">
 			<input type="submit" value="Logout" />
@@ -38,6 +38,10 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+
+	span {
+		color: #ff3e00;
 	}
 
 	input[type='text'] {

@@ -36,11 +36,10 @@
 		background-color: #ff3e00;
 		color: #fff;
 		text-decoration: none;
-		border-radius: 0.25rem;
-		transition: background-color 0.3s ease-in-out;
+		border-radius: 5px;
 	}
 
 	a:hover {
-		background-color: #e33b00;
+		background-color: #ff6347;
 	}
 </style>
