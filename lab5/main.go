@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"lab5/config"
@@ -8,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -59,10 +61,9 @@ func showLatestNews(chatID int, args []string) {
 		topic = "Moldova"
 	}
 
-	newUrl := fmt.Sprintf("%s/everything?apiKey=%s&q=%s&pageSize=%d", cfg.NewsUrl, cfg.NewsApiKey, url.QueryEscape(topic), 5)
-	fmt.Println(newUrl)
+	newsUrl := fmt.Sprintf("%s/everything?apiKey=%s&q=%s&pageSize=%d", cfg.NewsUrl, cfg.NewsApiKey, url.QueryEscape(topic), 5)
 
-	resp, err := http.Get(newUrl)
+	resp, err := http.Get(newsUrl)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -82,11 +83,48 @@ func showLatestNews(chatID int, args []string) {
 }
 
 func saveNews(chatID int, userID int, args []string) {
-	sendMessage(chatID, "Not implemented yet")
+	url := strings.Join(args, " ")
+
+	if url == "" {
+		sendMessage(chatID, "Please provide a URL.")
+		return
+	}
+
+	filename := fmt.Sprintf("%d.txt", userID)
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+
+	if _, err := fmt.Fprintf(file, "%s\n", url); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	sendMessage(chatID, "URL saved.")
 }
 
 func showSavedNews(chatID int, userID int) {
-	sendMessage(chatID, "Not implemented yet")
+	filename := fmt.Sprintf("%d.txt", userID)
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		sendMessage(chatID, line)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func sendMessage(chatID int, text string) {
