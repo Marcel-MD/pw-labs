@@ -8,9 +8,11 @@ import (
 )
 
 type Config struct {
-	BotToken string `env:"BOT_TOKEN"`
-	Port     string `env:"PORT" envDefault:"8443"`
-	Url      string `env:"URL" envDefault:"https://api.telegram.org/bot"`
+	BotToken   string `env:"BOT_TOKEN"`
+	Port       string `env:"PORT" envDefault:"8443"`
+	BotUrl     string `env:"BOT_URL" envDefault:"https://api.telegram.org/bot"`
+	NewsUrl    string `env:"NEWS_URL" envDefault:"https://newsapi.org/v2"`
+	NewsApiKey string `env:"NEWS_API_KEY"`
 }
 
 func New() Config {
